@@ -1,10 +1,13 @@
-const createModel = require('mongoose').model;
-const BookSchema = require('../schemas/BookSchema');
+const { model, Schema } = require('mongoose');
+
+const bookSchema = new Schema({
+  name: { type: String, required: true },
+  comment: { type: String},
+});
 
 const getBooks = async () =>  {
-  const bookModel = createModel('books', BookSchema);
-  const books = await bookModel.find();
-  console.log("model")
+  const bookModel = await model('books', bookSchema, 'books');
+  const books = await bookModel.find().lean(); // lean = boa prática de performance, para retornar um JSON text-plain ao invés de objetos Mongoose complexos
   return books;
 };
 
