@@ -5,7 +5,7 @@ const statusCode = {
 };
 
 module.exports = (err, _req, res, _next) => {
-  if (err.isFindById) {
+  if (err.idNotFound) {
     return res.status(statusCode.notFound).json({
       error: {
         status: statusCode.notFound,

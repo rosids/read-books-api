@@ -10,7 +10,7 @@ const getId = async (req, res, next) => {
 
   const book = await getBookId(id);
 
-  if(book.isInvalidId || !book.idNotFound) {
+  if(book.isInvalidId || book.idNotFound) {
     return next(book);
   }
 
