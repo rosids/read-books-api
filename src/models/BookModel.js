@@ -38,7 +38,7 @@ const deleteBook = async (id) => {
   }
 
   const deleteBook = await bookModel.deleteOne({ _id: id });
-  console.log(deleteBook);
+
   if(!deleteBook.deletedCount) {
     return ({ isDelete: true, message: 'Não foi possível excluir o livro.'});
   }
