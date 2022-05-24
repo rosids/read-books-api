@@ -1,9 +1,14 @@
 
-const getBooks = require('../models/BookModel');
+const {getBooks, createBook} = require('../models/BookModel');
 
 const getAllBooks = async () => {
   const books = await getBooks();
   return books;
 };
 
-module.exports = getAllBooks;
+const create = async (book) => await createBook(book);
+
+module.exports = {
+  getAllBooks,
+  create,
+};
