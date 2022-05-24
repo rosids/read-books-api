@@ -1,4 +1,4 @@
-const { model, Schema } = require('mongoose');
+const { model, Schema, isValidObjectId } = require('mongoose');
 
 const bookSchema = new Schema({
   name: { type: String, required: [true, 'O nome é obrigatório'] },
@@ -8,8 +8,20 @@ const bookSchema = new Schema({
 const bookModel = model('books', bookSchema);
 
 const getBooks = async () =>  {
-  const books = await bookModel.find().lean(); // lean = boa prática de performance, para retornar um JSON text-plain ao invés de objetos Mongoose complexos
+  const books = await bookModel.find().select('-__v').lean();
+  // lean = boa prática de performance, para retornar um JSON text-plain ao invés de objetos Mongoose complexos
+  // select('-campo') oculta campo d0 retorno da resposta
   return books;
+};
+
+const getId = async (id) =>  {
+  if(!isValidObjectId(id)) return { isInvalidId: true, message: 'O id informado é inválido.' };
+  
+  const book = await bookModel.findById(id).select('-__v').lean();
+  
+  if(!book) return { idNotFound: true, message: 'Não foi possível encontrar o livro.'};
+
+  return book;
 };
 
 const createBook = async (item) => {
@@ -21,5 +33,6 @@ const createBook = async (item) => {
 module.exports = {
   bookModel,
   getBooks,
+  getId,
   createBook,
 };
