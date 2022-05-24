@@ -1,8 +1,20 @@
-const { getAllBooks, create } = require("../services/BookService");
+const { getAllBooks, getBookId, create } = require("../services/BookService");
 
 const getAll = async (_req, res) => {
   const books = await getAllBooks();
   res.status(200).send(books);
+};
+
+const getId = async (req, res, next) => {
+  const { id } = req.params;
+
+  const book = await getBookId(id);
+
+  if(book.isInvalidId || !book.idNotFound) {
+    return next(book);
+  }
+
+  res.status(200).json(book);
 };
 
 const createBook = async (req, res) => {
@@ -17,5 +29,6 @@ const createBook = async (req, res) => {
 
 module.exports = {
   getAll,
+  getId,
   createBook,
 };
