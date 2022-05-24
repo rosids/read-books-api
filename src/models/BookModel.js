@@ -18,7 +18,7 @@ const getId = async (id) =>  {
   if(!isValidObjectId(id)) return { isInvalidId: true, message: 'O id informado é inválido.' };
   
   const book = await bookModel.findById(id).select('-__v').lean();
-  
+
   if(!book) return { idNotFound: true, message: 'Não foi possível encontrar o livro.'};
 
   return book;
@@ -30,9 +30,26 @@ const createBook = async (item) => {
   return newBook;
 }
 
+const deleteBook = async (id) => {
+  const validId = await getId(id);
+
+  if(validId.isInvalidId || validId.idNotFound) {
+    return validId;
+  }
+
+  const deleteBook = await bookModel.deleteOne({ _id: id });
+  console.log(deleteBook);
+  if(!deleteBook.deletedCount) {
+    return ({ isDelete: true, message: 'Não foi possível excluir o livro.'});
+  }
+
+  return 'Livro deletado com sucesso!'
+};
+
 module.exports = {
   bookModel,
   getBooks,
   getId,
   createBook,
+  deleteBook,
 };
