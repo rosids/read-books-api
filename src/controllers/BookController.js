@@ -1,4 +1,4 @@
-const { getAllBooks, getBookId, create } = require("../services/BookService");
+const { getAllBooks, getBookId, create, removeBook } = require("../services/BookService");
 
 const getAll = async (_req, res) => {
   const books = await getAllBooks();
@@ -20,15 +20,31 @@ const getId = async (req, res, next) => {
 const createBook = async (req, res) => {
   const { name, comment } = req.body;
   const newBook = await create({ name, comment });
-  console.log(newBook)
   res.status(201).json({
     status: 201,
     message: `O ${newBook.name} criado com sucesso.`
   });
 };
 
+const deleteBook = async (req, res, next) => {
+  const { id } = req.params;
+
+  if(!id) {
+    return res.status(404).json({ error: { message: 'O ID do usuário está ausente.'} });
+  }
+
+  const deleteBook = await removeBook(id);
+
+  if(deleteBook.isInvalidId || deleteBook.idNotFound || deleteBook.isDelete) {
+    return next(deleteBook);
+  }
+
+  res.status(200).send(deleteBook);
+};
+
 module.exports = {
   getAll,
   getId,
   createBook,
+  deleteBook,
 };

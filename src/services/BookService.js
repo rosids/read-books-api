@@ -1,5 +1,5 @@
 
-const {getBooks, createBook} = require('../models/BookModel');
+const { getBooks, getId, createBook, deleteBook } = require('../models/BookModel');
 
 const getAllBooks = async () => {
   const books = await getBooks();
@@ -13,8 +13,11 @@ const getBookId = async (id) => {
 
 const create = async (book) => await createBook(book);
 
+const removeBook = async (id) => await deleteBook(id);
+
 module.exports = {
   getAllBooks,
   getBookId,
   create,
+  removeBook,
 };
