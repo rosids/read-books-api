@@ -46,10 +46,29 @@ const deleteBook = async (id) => {
   return 'Livro deletado com sucesso!'
 };
 
+const updatedBook = async (id, book) => {
+  const validId = await getId(id);
+
+  if(validId.isInvalidId || validId.idNotFound) {
+    return validId;
+  }
+
+  const updatedBook = await bookModel.findOneAndUpdate({ _id: id }, book, {
+    rawResult: true, // retorna valor bruto do driver do mongo
+  }).select('-__v');
+
+  if(!updatedBook.lastErrorObject.updatedExisting) {
+    return ({ isUpdated: true, message: 'Não foi possível atualizar o livro.'});
+  }
+
+  return 'Livro atualizado com sucesso!';
+};
+
 module.exports = {
   bookModel,
   getBooks,
   getId,
   createBook,
   deleteBook,
+  updatedBook,
 };
