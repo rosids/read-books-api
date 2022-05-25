@@ -32,6 +32,15 @@ module.exports = (err, _req, res, _next) => {
     });
   }
 
+  if (err.isUpdated) {
+    return res.status(statusCode.badRequest).json({
+      error: {
+        status: statusCode.badRequest,
+        message: err.message,
+      },
+    });
+  }
+
   console.error(err.message);
 
   return res.status(500).json({
