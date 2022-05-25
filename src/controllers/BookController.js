@@ -1,4 +1,4 @@
-const { getAllBooks, getBookId, create, removeBook } = require("../services/BookService");
+const { getAllBooks, getBookId, create, removeBook, updated } = require("../services/BookService");
 
 const getAll = async (_req, res) => {
   const books = await getAllBooks();
@@ -42,9 +42,27 @@ const deleteBook = async (req, res, next) => {
   res.status(200).send(deleteBook);
 };
 
+const updatedBook = async (req, res, next) => {
+  const { id } = req.params;
+  const { name, comment } = req.body;
+
+  if(!id) {
+    return res.status(404).json({ error: { message: 'O ID do usuário está ausente.'} });
+  }
+
+  const updatedBook = await updated(id, { name, comment });
+
+  if(updatedBook.isInvalidId || updatedBook.idNotFound || updatedBook.isUpdated) {
+    return next(updatedBook);
+  }
+
+  res.status(200).json({ statusCode: 200, message: updatedBook });
+};
+
 module.exports = {
   getAll,
   getId,
   createBook,
   deleteBook,
+  updatedBook,
 };
