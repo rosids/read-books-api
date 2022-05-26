@@ -2,7 +2,7 @@ const { getAllBooks, getBookId, create, removeBook, updated } = require("../serv
 
 const getAll = async (_req, res) => {
   const books = await getAllBooks();
-  res.status(200).send(books);
+  res.status(200).json(books);
 };
 
 const getId = async (req, res, next) => {
@@ -22,7 +22,7 @@ const createBook = async (req, res) => {
   const newBook = await create({ name, comment });
   res.status(201).json({
     status: 201,
-    message: `O ${newBook.name} criado com sucesso.`
+    message: `${newBook.name} foi criado com sucesso.`
   });
 };
 
@@ -39,7 +39,7 @@ const deleteBook = async (req, res, next) => {
     return next(deleteBook);
   }
 
-  res.status(200).send(deleteBook);
+  res.status(200).json({ statusCode: 200, message: deleteBook });
 };
 
 const updatedBook = async (req, res, next) => {
