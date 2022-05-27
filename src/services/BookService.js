@@ -1,9 +1,11 @@
 
 const { getBooks, getId, createBook, deleteBook, updatedBook } = require('../models/BookModel');
 
-const getAllBooks = async () => {
-  const books = await getBooks();
-  return books;
+const getAllBooks = async (page = 0, perPage = 6) => {
+  // Number(page) - 1 = porque o array começa na posição 0. Ex: se for solicitado a página 1, a posição 1 no array equivale a 0.
+  page = Math.max(0, Number(page) - 1);
+  const books = await getBooks(page, Number(perPage));
+  return books[0];
 };
 
 const getBookId = async (id) => {

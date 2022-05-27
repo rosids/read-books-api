@@ -7,16 +7,43 @@ const bookSchema = new Schema({
 
 const bookModel = model('books', bookSchema);
 
-const getBooks = async () =>  {
-  const books = await bookModel.find().select('-__v').lean();
-  // lean = boa prática de performance, para retornar um JSON text-plain ao invés de objetos Mongoose complexos
-  // select('-campo') oculta campo d0 retorno da resposta
+const getBooks = async (page, perPage) =>  {
+  const books = await bookModel.aggregate([
+    { $facet: {
+      data: [
+        { $group: {
+          _id: '$_id',
+          name : { $first: '$name' },
+          comment : { $first: '$comment' },
+        }},
+        { $sort : { name : 1, _id: 1 } },
+        { $skip: page * perPage },
+        { $limit: perPage },
+      ],
+      metadata: [
+        { $group: {
+          _id: null,
+          currentPage: { $first: page + 1},
+          perPage: { $first: perPage },
+          totalCount: { $sum: 1 },
+        }},
+        { $project: { 
+          _id: 0,
+          totalCount: 1,
+          currentPage: 1,
+          totalPages: { $ceil: { $divide: ['$totalCount', '$perPage'] } },
+        }}
+      ],
+    }}
+  ]);
   return books;
 };
 
 const getId = async (id) =>  {
   if(!isValidObjectId(id)) return { isInvalidId: true, message: 'O id informado é inválido.' };
-  
+
+  // lean = boa prática de performance, para retornar um JSON text-plain ao invés de objetos Mongoose complexos
+  // select('-campo') oculta campo d0 retorno da resposta
   const book = await bookModel.findById(id).select('-__v').lean();
 
   if(!book) return { idNotFound: true, message: 'Não foi possível encontrar o livro.'};

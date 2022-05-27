@@ -1,7 +1,8 @@
 const { getAllBooks, getBookId, create, removeBook, updated } = require("../services/BookService");
 
-const getAll = async (_req, res) => {
-  const books = await getAllBooks();
+const getAll = async (req, res) => {
+  const { page, perPage } = req.query;
+  const books = await getAllBooks(page, perPage);
   res.status(200).json(books);
 };
 
